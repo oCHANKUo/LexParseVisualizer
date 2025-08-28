@@ -63,6 +63,12 @@ def p_error(p):
 parser = yacc.yacc()
 
 # Use this function with the output of the lexer
+# lex_output = lex_input(text)
+# parse_tree = parse_tokens(lex_output)
 def parse_tokens(lex_output):
     expr_str = "".join([tok['value'] for tok in lex_output])
     return parser.parse(expr_str)
+
+# use parser.parse(user_input) with the user input itself
+# user_input = "3+4"
+# parse_tree = parser.parse(user_input)

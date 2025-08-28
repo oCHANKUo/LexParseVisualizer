@@ -1,7 +1,9 @@
 
 import ply.yacc as yacc
-from lexer import lex_input
-from token_def import td
+import token_def as td
+# from lexer import lex_input
+
+tokens = td.ALL_TOKENS
 
 # Node Class
 class Node:
@@ -20,45 +22,45 @@ class Node:
 # Grammar Rules
 # E → TE´ 
 def p_E(p):
-    'E: T E_PRIME'
+    "E : T E_PRIME"
     p[0] = Node('E', children=[p[1], p[2]])
 
 # E´→ +TE´|Ɛ 
 def p_E_PRIME(p):
-    'E_PRIME: PLUS T E_PRIME'
+    "E_PRIME : PLUS T E_PRIME"
     p[0] = Node('E_PRIME', children=[Node(td.TOKEN_PLUS, value=p[1]), p[2], p[3]])
 
 def p_E_PRIME_empty(p):
-    'E_PRIME: '
+    "E_PRIME :"
     p[0] = Node('E_PRIME', children=[])
 
 # T → FT´ 
 def p_T(p):
-    'T: F T_PRIME'
+    "T : F T_PRIME"
     p[0] = Node('T', children=[p[1], p[2]])
 
 # T´→ *FT´|Ɛ 
 def p_T_PRIME(p):
-    'T_PRIME: STAR F T_PRIME'
+    "T_PRIME : STAR F T_PRIME"
     p[0] = Node('T_PRIME', children=[Node(td.TOKEN_MUL, value=p[1]), p[2], p[3]])
 
 def p_T_PRIME_empty(p):
-    'T_PRIME: '
+    "T_PRIME :"
     p[0] = Node('T_PRIME', children=[])
 
 # F → (E)|id 
 def p_F_paren(p):
-    'F : LPAREN E RPAREN'
+    "F : LPAREN E RPAREN"
     p[0] = Node('F', children=[Node(td.TOKEN_LPAREN, value=p[1]), p[2], Node(td.TOKEN_RPAREN, value=p[3])])
 
 # id → 0|1|2|3|4|5|6|7|8|9|a…z|A…Z
 def p_ID(p):
-    'ID: NUMBER | IDENTIFIER'
+    "F : IDENTIFIER"
     p[0] = Node(td.TOKEN_ID, children=[], value=p[1])
 
 # Error rule for syntax errors
 def p_error(p):
-    print("Syntax error in input!")
+    print("Syntax error at", p.value)
 
 parser = yacc.yacc()
 
@@ -72,3 +74,10 @@ def parse_tokens(lex_output):
 # use parser.parse(user_input) with the user input itself
 # user_input = "3+4"
 # parse_tree = parser.parse(user_input)
+
+# test
+if __name__ == "__main__":
+    user_input = "3+4"
+    # lex_out = lex_input(user_input)
+    tree = parser.parse(user_input)
+    print(tree)

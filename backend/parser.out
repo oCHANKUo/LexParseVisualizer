@@ -1,0 +1,48 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    div
+    id
+    lparen
+    minus
+    mul
+    plus
+    rparen
+
+Grammar
+
+Rule 0     S' -> E
+Rule 1     E -> T E_PRIME
+Rule 2     E_PRIME -> PLUS T E_PRIME
+Rule 3     E_PRIME -> <empty>
+Rule 4     T -> F T_PRIME
+Rule 5     T_PRIME -> STAR F T_PRIME
+Rule 6     T_PRIME -> <empty>
+Rule 7     F -> LPAREN E RPAREN
+Rule 8     F -> IDENTIFIER
+
+Terminals, with rules where they appear
+
+div                  : 
+error                : 
+id                   : 
+lparen               : 
+minus                : 
+mul                  : 
+plus                 : 
+rparen               : 
+
+Nonterminals, with rules where they appear
+
+E                    : 7 0
+E_PRIME              : 1 2
+F                    : 4 5
+IDENTIFIER           : 8
+LPAREN               : 7
+PLUS                 : 2
+RPAREN               : 7
+STAR                 : 5
+T                    : 1 2
+T_PRIME              : 4 5
+

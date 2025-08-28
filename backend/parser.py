@@ -62,6 +62,7 @@ def p_ID(p):
 def p_error(p):
     print("Syntax error at", p.value)
 
+# building the parser
 parser = yacc.yacc()
 
 # Use this function with the output of the lexer

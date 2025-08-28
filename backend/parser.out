@@ -2,13 +2,9 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    div
-    id
-    lparen
-    minus
-    mul
-    plus
-    rparen
+    DIV
+    MINUS
+    MUL
 
 Grammar
 
@@ -24,24 +20,20 @@ Rule 8     F -> IDENTIFIER
 
 Terminals, with rules where they appear
 
-div                  : 
+DIV                  : 
+IDENTIFIER           : 8
+LPAREN               : 7
+MINUS                : 
+MUL                  : 
+PLUS                 : 2
+RPAREN               : 7
 error                : 
-id                   : 
-lparen               : 
-minus                : 
-mul                  : 
-plus                 : 
-rparen               : 
 
 Nonterminals, with rules where they appear
 
 E                    : 7 0
 E_PRIME              : 1 2
 F                    : 4 5
-IDENTIFIER           : 8
-LPAREN               : 7
-PLUS                 : 2
-RPAREN               : 7
 STAR                 : 5
 T                    : 1 2
 T_PRIME              : 4 5

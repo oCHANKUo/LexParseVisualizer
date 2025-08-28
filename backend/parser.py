@@ -71,7 +71,7 @@ def parse_tokens(lex_output):
     expr_str = "".join([tok['value'] for tok in lex_output])
     return parser.parse(expr_str)
 
-# use parser.parse(user_input) with the user input itself
+# use parser.parse(user_input) with the user input itself. But the Lexer should still be present
 # user_input = "3+4"
 # parse_tree = parser.parse(user_input)
 
@@ -79,5 +79,5 @@ def parse_tokens(lex_output):
 if __name__ == "__main__":
     user_input = "3+4"
     # lex_out = lex_input(user_input)
-    tree = parser.parse(user_input)
+    tree = parser.parse(user_input) # or lex_output
     print(tree)

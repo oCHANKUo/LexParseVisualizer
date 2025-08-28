@@ -1,12 +1,12 @@
 # You can change the tokens if you want. Or add more if you feel like it. But variable name format should be consistent
 
-TOKEN_ID      = "id"       # numbers or identifiers
-TOKEN_PLUS    = "plus"     # '+'
-TOKEN_MUL     = "mul"      # '*'
-TOKEN_MINUS   = "minus"    # '-'
-TOKEN_DIV     = "div"      # '/'
-TOKEN_LPAREN  = "lparen"   # '('
-TOKEN_RPAREN  = "rparen"   # ')'
+TOKEN_ID      = "IDENTIFIER"       # numbers or identifiers
+TOKEN_PLUS    = "PLUS"     # '+'
+TOKEN_MUL     = "MUL"      # '*'
+TOKEN_MINUS   = "MINUS"    # '-'
+TOKEN_DIV     = "DIV"      # '/'
+TOKEN_LPAREN  = "LPAREN"   # '('
+TOKEN_RPAREN  = "RPAREN"   # ')'
 
 # a list of all token types
 ALL_TOKENS = [

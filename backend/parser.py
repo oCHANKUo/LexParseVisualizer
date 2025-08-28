@@ -55,3 +55,14 @@ def p_F_paren(p):
 def p_ID(p):
     'ID: NUMBER | IDENTIFIER'
     p[0] = Node(td.TOKEN_ID, children=[], value=p[1])
+
+# Error rule for syntax errors
+def p_error(p):
+    print("Syntax error in input!")
+
+parser = yacc.yacc()
+
+# Use this function with the output of the lexer
+def parse_tokens(lex_output):
+    expr_str = "".join([tok['value'] for tok in lex_output])
+    return parser.parse(expr_str)

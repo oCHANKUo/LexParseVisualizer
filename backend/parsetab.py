@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'IDENTIFIER LPAREN PLUS RPAREN STARE : T E_PRIMEE_PRIME : PLUS T E_PRIMEE_PRIME :T : F T_PRIMET_PRIME : STAR F T_PRIMET_PRIME :F : LPAREN E RPARENF : IDENTIFIER'
+_lr_signature = 'DIV IDENTIFIER LPAREN MINUS MUL PLUS RPARENE : T E_PRIMEE_PRIME : PLUS T E_PRIMEE_PRIME :T : F T_PRIMET_PRIME : MUL F T_PRIMET_PRIME :F : LPAREN E RPARENF : IDENTIFIER'
     
-_lr_action_items = {'LPAREN':([0,4,7,9,],[4,4,4,4,]),'IDENTIFIER':([0,4,7,9,],[5,5,5,5,]),'$end':([1,2,3,5,6,8,11,12,13,14,15,],[0,-3,-6,-8,-1,-4,-3,-6,-7,-2,-5,]),'PLUS':([2,3,5,8,11,12,13,15,],[7,-6,-8,-4,7,-6,-7,-5,]),'RPAREN':([2,3,5,6,8,10,11,12,13,14,15,],[-3,-6,-8,-1,-4,13,-3,-6,-7,-2,-5,]),'STAR':([3,5,12,13,],[9,-8,9,-7,]),}
+_lr_action_items = {'LPAREN':([0,4,7,9,],[4,4,4,4,]),'IDENTIFIER':([0,4,7,9,],[5,5,5,5,]),'$end':([1,2,3,5,6,8,11,12,13,14,15,],[0,-3,-6,-8,-1,-4,-3,-6,-7,-2,-5,]),'PLUS':([2,3,5,8,11,12,13,15,],[7,-6,-8,-4,7,-6,-7,-5,]),'RPAREN':([2,3,5,6,8,10,11,12,13,14,15,],[-3,-6,-8,-1,-4,13,-3,-6,-7,-2,-5,]),'MUL':([3,5,12,13,],[9,-8,9,-7,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -31,7 +31,7 @@ _lr_productions = [
   ('E_PRIME -> PLUS T E_PRIME','E_PRIME',3,'p_E_PRIME','parser.py',30),
   ('E_PRIME -> <empty>','E_PRIME',0,'p_E_PRIME_empty','parser.py',34),
   ('T -> F T_PRIME','T',2,'p_T','parser.py',39),
-  ('T_PRIME -> STAR F T_PRIME','T_PRIME',3,'p_T_PRIME','parser.py',44),
+  ('T_PRIME -> MUL F T_PRIME','T_PRIME',3,'p_T_PRIME','parser.py',44),
   ('T_PRIME -> <empty>','T_PRIME',0,'p_T_PRIME_empty','parser.py',48),
   ('F -> LPAREN E RPAREN','F',3,'p_F_paren','parser.py',53),
   ('F -> IDENTIFIER','F',1,'p_ID','parser.py',58),

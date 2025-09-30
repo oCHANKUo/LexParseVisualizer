@@ -41,7 +41,7 @@ def p_T(p):
 
 # T´→ *FT´|Ɛ 
 def p_T_PRIME(p):
-    "T_PRIME : STAR F T_PRIME"
+    "T_PRIME : MUL F T_PRIME"
     p[0] = Node('T_PRIME', children=[Node(td.TOKEN_MUL, value=p[1]), p[2], p[3]])
 
 def p_T_PRIME_empty(p):
@@ -78,7 +78,7 @@ def parse_tokens(lex_output):
 
 # test
 if __name__ == "__main__":
-    user_input = "3+4"
+    user_input = "3 + a * (9 - b)"
     # lex_out = lex_input(user_input)
     tree = parser.parse(user_input) # or lex_output
     print(tree)

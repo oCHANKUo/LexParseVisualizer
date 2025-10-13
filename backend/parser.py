@@ -62,23 +62,56 @@ def p_ID(p):
 def p_error(p):
     print("Syntax error at", p.value)
 
-# building the parser
-parser = yacc.yacc()
+class ListLexer:
+    def __init__(self, token_list):
+        self.tokens = token_list
+        self.index = 0
+        print("[DEBUG] Lexer input tokens:")
+        for t in token_list:
+            print(f"  {t}")
 
-# Use this function with the output of the lexer
-# lex_output = lex_input(text)
-# parse_tree = parse_tokens(lex_output)
+    def token(self):
+        if self.index < len(self.tokens):
+            t = self.tokens[self.index]
+            print(f"[DEBUG] Yielding token: {t}")
+            self.index += 1
+            class DummyToken:
+                pass
+            tok = DummyToken()
+            tok.type = t["token"]  # Should be 'IDENTIFIER', 'PLUS', etc.
+            tok.value = t["lexeme"]
+            tok.lineno = 1
+            tok.lexpos = self.index - 1
+            return tok
+        else:
+            print("[DEBUG] No more tokens.")
+            return None
+
+parser = yacc.yacc(write_tables=False, debug=True)
+
 def parse_tokens(lex_output):
-    expr_str = "".join([tok['value'] for tok in lex_output])
-    return parser.parse(expr_str)
+    print("[DEBUG] parse_tokens called with:")
+    for t in lex_output:
+        print(f"  {t}")
+    lexer = ListLexer(lex_output)
+    error_msg = None
+    def custom_error(p):
+        nonlocal error_msg
+        if p:
+            error_msg = f"Syntax error at '{p.value}' (type: {getattr(p, 'type', None)})"
+        else:
+            error_msg = "Syntax error at EOF"
+        print(error_msg)
+    parser.errorfunc = custom_error
+    result = parser.parse(lexer=lexer)
+    print("[DEBUG] Parse result:", result)
+    return result, error_msg
 
-# use parser.parse(user_input) with the user input itself. But the Lexer should still be present
-# user_input = "3+4"
-# parse_tree = parser.parse(user_input)
 
 # test
 if __name__ == "__main__":
-    user_input = "3 + a * (9 - b)"
-    # lex_out = lex_input(user_input)
-    tree = parser.parse(user_input) # or lex_output
+    from lexer import lexer
+    user_input = "3 + a * (9 + b)"
+    lex_out = lexer(user_input)
+    tree = parse_tokens(lex_out)
     print(tree)

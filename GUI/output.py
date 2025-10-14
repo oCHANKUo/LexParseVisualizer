@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QHeaderView,
-    QPushButton, QHBoxLayout
+    QPushButton, QHBoxLayout, QScrollArea
 )
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor, QFont
@@ -14,16 +14,16 @@ class OutputWindow(QWidget):
     def __init__(self, tokens):
         super().__init__()
         self.setWindowTitle("Lexer Output")
-        self.resize(700, 500)
+        self.resize(900, 600)
         self.setStyleSheet("background-color: black; color: #00FF66;")
-        self.showMaximized()  # Show window maximized
+        self.showMaximized()
 
         main_layout = QVBoxLayout()
         main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        main_layout.setContentsMargins(60, 40, 60, 40)  # Add padding around the page
-        main_layout.setSpacing(10)  # Keep table and tree close
+        main_layout.setContentsMargins(60, 40, 60, 40)
+        main_layout.setSpacing(20)
 
-        # Title
+        # --- Title ---
         title = QLabel("LEXICAL ANALYSIS RESULT")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet("""
@@ -32,15 +32,16 @@ class OutputWindow(QWidget):
                 font-size: 28px;
                 font-family: 'Courier New', monospace;
                 font-weight: bold;
+                letter-spacing: 2px;
             }
         """)
         main_layout.addWidget(title)
 
-        # Horizontal layout for table and parse tree
+        # --- Horizontal Layout (Table + Parse Tree) ---
         row_layout = QHBoxLayout()
-        row_layout.setSpacing(30)
+        row_layout.setSpacing(40)
 
-        # Table setup
+        # --- TOKEN TABLE ---
         self.table = QTableWidget()
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["Lexeme", "Token"])
@@ -53,6 +54,7 @@ class OutputWindow(QWidget):
                 font-size: 18px;
                 font-family: 'Courier New', monospace;
                 gridline-color: #00FF66;
+                border: 1px solid #00FF66;
             }
             QHeaderView::section {
                 background-color: #00FF66;
@@ -63,7 +65,7 @@ class OutputWindow(QWidget):
         self.load_tokens(tokens)
         row_layout.addWidget(self.table, stretch=1)
 
-        # Parse tree display
+        # --- PARSE TREE AREA ---
         try:
             parse_tree, error_msg = parse_tokens(tokens)
             tree_str = self.format_tree(parse_tree)
@@ -73,24 +75,32 @@ class OutputWindow(QWidget):
             error_msg = str(e)
             print("[DEBUG] Exception in parse tree:", e)
 
-        tree_vbox = QVBoxLayout()
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("border: none;")
+
+        tree_container = QWidget()
+        tree_layout = QVBoxLayout(tree_container)
+        tree_layout.setContentsMargins(10, 10, 10, 10)
 
         self.tree_display = QLabel(tree_str)
-        self.tree_display.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.tree_display.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.tree_display.setStyleSheet("""
             QLabel {
                 color: #00FF66;
-                font-size: 16px;
+                font-size: 17px;
                 font-family: 'Courier New', monospace;
                 background: #000;
                 border: 1px solid #00FF66;
-                padding: 8px;
+                border-radius: 6px;
+                padding: 14px 20px;
+                line-height: 180%;
             }
         """)
         self.tree_display.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        tree_vbox.addWidget(self.tree_display)
+        tree_layout.addWidget(self.tree_display)
 
-        # Error label below tree
+        # --- ERROR LABEL ---
         self.error_label = QLabel("")
         self.error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.error_label.setStyleSheet("""
@@ -103,14 +113,16 @@ class OutputWindow(QWidget):
         """)
         if error_msg:
             self.error_label.setText(error_msg)
-        tree_vbox.addWidget(self.error_label)
-        row_layout.addLayout(tree_vbox, stretch=2)
+        tree_layout.addWidget(self.error_label)
 
+        scroll.setWidget(tree_container)
+        row_layout.addWidget(scroll, stretch=2)
         main_layout.addLayout(row_layout)
 
-        # "Enter Next Input" button centered below
+        # --- NEXT INPUT BUTTON ---
         btn_layout = QHBoxLayout()
         btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.next_input_btn = QPushButton("Enter Next Input")
         self.next_input_btn.setStyleSheet("""
             QPushButton {
@@ -119,9 +131,9 @@ class OutputWindow(QWidget):
                 font-size: 20px;
                 font-family: 'Courier New', monospace;
                 font-weight: bold;
-                border-radius: 8px;
-                padding: 10px 32px;
-                margin-top: 24px;
+                border-radius: 10px;
+                padding: 12px 36px;
+                margin-top: 30px;
             }
             QPushButton:hover {
                 background-color: #00cc55;
@@ -133,6 +145,7 @@ class OutputWindow(QWidget):
 
         self.setLayout(main_layout)
 
+    # --- Populate token table ---
     def load_tokens(self, tokens):
         self.table.setRowCount(len(tokens))
         for row, token_data in enumerate(tokens):
@@ -147,24 +160,40 @@ class OutputWindow(QWidget):
             self.table.setItem(row, 0, lexeme_item)
             self.table.setItem(row, 1, token_item)
 
+    # --- Corrected tree formatting ---
     def format_tree(self, node, prefix="", is_last=True):
         if node is None:
             return f"{prefix}└── [Empty Parse Tree]"
+
         branch = "└── " if is_last else "├── "
+        spacing = "  "  # small gap between levels
+
         # Leaf node with value
         if hasattr(node, "value") and node.value is not None and not node.children:
             return f"{prefix}{branch}{node.value}"
-        # Node with no children and no value (epsilon) -- SKIP, do not add any line
+
+        # Skip epsilon/empty
         if hasattr(node, "children") and not node.children and node.value is None:
             return ""
-        # Otherwise, show node name and recurse for children
+
+        # Determine visible (non-empty) children
+        visible_children = []
+        if hasattr(node, "children"):
+            for c in node.children:
+                if c is not None:
+                    s = self.format_tree(c)
+                    if s.strip():
+                        visible_children.append(c)
+
+        # Current node
         lines = [f"{prefix}{branch}{node.name}"]
-        if hasattr(node, "children") and node.children:
+
+        # Recurse properly with last-child check
+        for i, child in enumerate(visible_children):
+            last_child = (i == len(visible_children) - 1)
             child_prefix = prefix + ("    " if is_last else "│   ")
-            visible_children = [child for child in node.children if child is not None]
-            for i, child in enumerate(visible_children):
-                last = (i == len(visible_children) - 1)
-                child_str = self.format_tree(child, child_prefix, last)
-                if child_str.strip():
-                    lines.append(child_str)
+            child_str = self.format_tree(child, child_prefix + spacing, last_child)
+            if child_str.strip():
+                lines.append(child_str)
+
         return "\n".join(lines)

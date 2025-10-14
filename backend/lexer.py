@@ -1,7 +1,7 @@
 # lexer.py
 
 # Import the official token names from the shared module.
-from token_def import TOKEN_ID, TOKEN_PLUS, TOKEN_MUL, TOKEN_MINUS, TOKEN_DIV, TOKEN_LPAREN, TOKEN_RPAREN
+from .token_def import TOKEN_ID, TOKEN_PLUS, TOKEN_MUL, TOKEN_MINUS, TOKEN_DIV, TOKEN_LPAREN, TOKEN_RPAREN
 
 
 def lexer(input_string):
@@ -59,7 +59,7 @@ def lexer(input_string):
 
 # You can add a simple test case here to run the function directly.
 if __name__ == '__main__':
-    test_string = "3 + a * (9 - b)"
+    test_string = "3 + a * (9 + b)"
     try:
         token_list = lexer(test_string)
         print("Input String:", test_string)

@@ -1,3 +1,10 @@
+import sys
+import os
+
+# --- PyInstaller PLY fix: redirect stderr when frozen ---
+if getattr(sys, 'frozen', False):
+    # Redirect stderr to avoid PLY crashing in --windowed mode
+    sys.stderr = open(os.devnull, 'w')
 
 import ply.yacc as yacc
 import token_def as td
@@ -8,7 +15,7 @@ tokens = td.ALL_TOKENS
 # Node Class
 class Node:
     def __init__(self, name, children=None, value=None):
-        self.name = name
+        self.name = name if name else "Node"
         self.children = children if children is not None else []
         self.value = value
 
@@ -17,9 +24,8 @@ class Node:
             return f"{self.name}({self.value})"
         else:
             return f"{self.name}({self.children})"
-        
 
-# Grammar Rules
+# --- Grammar Rules ---
 # E → TE´ 
 def p_E(p):
     "E : T E_PRIME"
@@ -62,6 +68,7 @@ def p_ID(p):
 def p_error(p):
     print("Syntax error at", p.value)
 
+# --- Custom lexer wrapper for token lists ---
 class ListLexer:
     def __init__(self, token_list):
         self.tokens = token_list
@@ -78,7 +85,7 @@ class ListLexer:
             class DummyToken:
                 pass
             tok = DummyToken()
-            tok.type = t["token"]  # Should be 'IDENTIFIER', 'PLUS', etc.
+            tok.type = t["token"]  # 'IDENTIFIER', 'PLUS', etc.
             tok.value = t["lexeme"]
             tok.lineno = 1
             tok.lexpos = self.index - 1
@@ -87,7 +94,8 @@ class ListLexer:
             print("[DEBUG] No more tokens.")
             return None
 
-parser = yacc.yacc(write_tables=False, debug=True)
+# --- PLY parser ---
+parser = yacc.yacc(write_tables=False, debug=False)
 
 def parse_tokens(lex_output):
     print("[DEBUG] parse_tokens called with:")
@@ -107,10 +115,9 @@ def parse_tokens(lex_output):
     print("[DEBUG] Parse result:", result)
     return result, error_msg
 
-
-# test
+# --- Test ---
 if __name__ == "__main__":
-    from lexer import lexer
+    from backend.lexer import lexer  # Make sure backend is a package with __init__.py
     user_input = "3 + a * (9 + b)"
     lex_out = lexer(user_input)
     tree = parse_tokens(lex_out)
